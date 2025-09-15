@@ -1,0 +1,7 @@
+Début du fichier
+JE COMPREND PAS 
+JAIME PAS CETTE MATIERE 
+lusieurs lignes de texte afin de dépasser largement 64 octets.
+Les étudiants doivent utiliser ce fichier pour tester leur programme qui lit depuis l'entrée standard et écrit dans un fichier de sortie.
+Chaque bloc lu devra être traité correctement, et l'utilisation du buffer de 64 octets permettra de vérifier la lecture par blocs.
+Il est important de tester avec un contenu suffisamment long pour s'assurer que la fonction copy_stdin_to_fd() fonctionne correctement sur plusieurs blocs.
