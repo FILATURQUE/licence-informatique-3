@@ -1,0 +1,283 @@
+   0  $accept : %entry% $end
+
+   1  ansyn : TERM ansyn
+   2        | expr TERM
+
+   3  expr : value
+   4       | expr PLUS expr
+   5       | expr TIMES expr
+   6       | expr MINUS expr
+   7       | MINUS expr
+   8       | LPAR expr RPAR
+
+   9  value : INT
+  10        | FLOAT
+  11        | TRUE
+  12        | FALSE
+  13        | STR
+
+  14  %entry% : '\001' ansyn
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . ansyn  (14)
+
+	INT  shift 3
+	FLOAT  shift 4
+	STR  shift 5
+	TRUE  shift 6
+	FALSE  shift 7
+	MINUS  shift 8
+	LPAR  shift 9
+	TERM  shift 10
+	.  error
+
+	ansyn  goto 11
+	expr  goto 12
+	value  goto 13
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	value : INT .  (9)
+
+	.  reduce 9
+
+
+state 4
+	value : FLOAT .  (10)
+
+	.  reduce 10
+
+
+state 5
+	value : STR .  (13)
+
+	.  reduce 13
+
+
+state 6
+	value : TRUE .  (11)
+
+	.  reduce 11
+
+
+state 7
+	value : FALSE .  (12)
+
+	.  reduce 12
+
+
+state 8
+	expr : MINUS . expr  (7)
+
+	INT  shift 3
+	FLOAT  shift 4
+	STR  shift 5
+	TRUE  shift 6
+	FALSE  shift 7
+	MINUS  shift 8
+	LPAR  shift 9
+	.  error
+
+	expr  goto 14
+	value  goto 13
+
+
+state 9
+	expr : LPAR . expr RPAR  (8)
+
+	INT  shift 3
+	FLOAT  shift 4
+	STR  shift 5
+	TRUE  shift 6
+	FALSE  shift 7
+	MINUS  shift 8
+	LPAR  shift 9
+	.  error
+
+	expr  goto 15
+	value  goto 13
+
+
+state 10
+	ansyn : TERM . ansyn  (1)
+
+	INT  shift 3
+	FLOAT  shift 4
+	STR  shift 5
+	TRUE  shift 6
+	FALSE  shift 7
+	MINUS  shift 8
+	LPAR  shift 9
+	TERM  shift 10
+	.  error
+
+	ansyn  goto 16
+	expr  goto 12
+	value  goto 13
+
+
+state 11
+	%entry% : '\001' ansyn .  (14)
+
+	.  reduce 14
+
+
+state 12
+	ansyn : expr . TERM  (2)
+	expr : expr . PLUS expr  (4)
+	expr : expr . TIMES expr  (5)
+	expr : expr . MINUS expr  (6)
+
+	PLUS  shift 17
+	MINUS  shift 18
+	TIMES  shift 19
+	TERM  shift 20
+	.  error
+
+
+state 13
+	expr : value .  (3)
+
+	.  reduce 3
+
+
+state 14
+	expr : expr . PLUS expr  (4)
+	expr : expr . TIMES expr  (5)
+	expr : expr . MINUS expr  (6)
+	expr : MINUS expr .  (7)
+
+	.  reduce 7
+
+
+state 15
+	expr : expr . PLUS expr  (4)
+	expr : expr . TIMES expr  (5)
+	expr : expr . MINUS expr  (6)
+	expr : LPAR expr . RPAR  (8)
+
+	PLUS  shift 17
+	MINUS  shift 18
+	TIMES  shift 19
+	RPAR  shift 21
+	.  error
+
+
+state 16
+	ansyn : TERM ansyn .  (1)
+
+	.  reduce 1
+
+
+state 17
+	expr : expr PLUS . expr  (4)
+
+	INT  shift 3
+	FLOAT  shift 4
+	STR  shift 5
+	TRUE  shift 6
+	FALSE  shift 7
+	MINUS  shift 8
+	LPAR  shift 9
+	.  error
+
+	expr  goto 22
+	value  goto 13
+
+
+state 18
+	expr : expr MINUS . expr  (6)
+
+	INT  shift 3
+	FLOAT  shift 4
+	STR  shift 5
+	TRUE  shift 6
+	FALSE  shift 7
+	MINUS  shift 8
+	LPAR  shift 9
+	.  error
+
+	expr  goto 23
+	value  goto 13
+
+
+state 19
+	expr : expr TIMES . expr  (5)
+
+	INT  shift 3
+	FLOAT  shift 4
+	STR  shift 5
+	TRUE  shift 6
+	FALSE  shift 7
+	MINUS  shift 8
+	LPAR  shift 9
+	.  error
+
+	expr  goto 24
+	value  goto 13
+
+
+state 20
+	ansyn : expr TERM .  (2)
+
+	.  reduce 2
+
+
+state 21
+	expr : LPAR expr RPAR .  (8)
+
+	.  reduce 8
+
+
+state 22
+	expr : expr . PLUS expr  (4)
+	expr : expr PLUS expr .  (4)
+	expr : expr . TIMES expr  (5)
+	expr : expr . MINUS expr  (6)
+
+	TIMES  shift 19
+	PLUS  reduce 4
+	MINUS  reduce 4
+	RPAR  reduce 4
+	TERM  reduce 4
+
+
+state 23
+	expr : expr . PLUS expr  (4)
+	expr : expr . TIMES expr  (5)
+	expr : expr . MINUS expr  (6)
+	expr : expr MINUS expr .  (6)
+
+	TIMES  shift 19
+	PLUS  reduce 6
+	MINUS  reduce 6
+	RPAR  reduce 6
+	TERM  reduce 6
+
+
+state 24
+	expr : expr . PLUS expr  (4)
+	expr : expr . TIMES expr  (5)
+	expr : expr TIMES expr .  (5)
+	expr : expr . MINUS expr  (6)
+
+	.  reduce 5
+
+
+15 terminals, 5 nonterminals
+15 grammar rules, 25 states
