@@ -10,6 +10,9 @@ and expr =
   | EAdd of expr * expr
   | EMul of expr * expr
   | ENeg of expr
+  | EAnd of expr * expr
+  | EOr of expr * expr
+  | ENot of expr
 
 (* Conversion en chaîne de caractères pour affichage *)
 let rec string_of_value v = match v with
@@ -22,7 +25,10 @@ and string_of_expr e = match e with
   | ECst v -> string_of_value v
   | EAdd (e1, e2) -> Printf.sprintf "(%s) + (%s)" (string_of_expr e1) (string_of_expr e2)
   | EMul (e1, e2) -> Printf.sprintf "(%s) * (%s)" (string_of_expr e1) (string_of_expr e2)
-  | ENeg e -> Printf.sprintf "- (%s)" (string_of_expr e)  
+  | ENeg e -> Printf.sprintf "-(%s)" (string_of_expr e)
+  | EAnd (e1, e2) -> Printf.sprintf "(%s) and (%s)" (string_of_expr e1) (string_of_expr e2)
+  | EOr (e1, e2) -> Printf.sprintf "(%s) or (%s)" (string_of_expr e1) (string_of_expr e2)
+  | ENot e -> Printf.sprintf "not (%s)" (string_of_expr e)
 
 (* Arithmétique du type value *)
 let add_value v1 v2 = match (v1, v2) with
@@ -33,7 +39,19 @@ let add_value v1 v2 = match (v1, v2) with
   | VStr s1, VStr s2 -> VStr (s1 ^ s2)
   | VStr s1, v2 -> VStr (s1 ^ (string_of_value v2))
   | v1, VStr s2 -> VStr ((string_of_value v1) ^ s2)
-  | _, _ -> failwith (Printf.sprintf "Type mismatch: cannot add '%s' and '%s'" (string_of_value v1) (string_of_value v2))
+  | _, _ -> failwith (Printf.sprintf "Type mismatch: cannot add '%s' and '%s'" (string_of_value v1) (string_of_value v2)) 
+
+let and_value v1 v2 = match (v1, v2) with
+  | VBool b1, VBool b2 -> VBool (b1 && b2)
+  | _, _ -> failwith (Printf.sprintf "Type mismatch: cannot and '%s' and '%s'" (string_of_value v1) (string_of_value v2))
+
+let or_value v1 v2 = match (v1, v2) with
+  | VBool b1, VBool b2 -> VBool (b1 || b2)
+  | _, _ -> failwith (Printf.sprintf "Type mismatch: cannot or '%s' or '%s'" (string_of_value v1) (string_of_value v2))
+
+let not_value v = match v with
+  | VBool b -> VBool (not b)
+  | _ -> failwith (Printf.sprintf "Type mismatch: cannot not '%s'" (string_of_value v))
 
 let rec neg_value v = match v with
   | VInt i -> VInt(-i)
@@ -45,6 +63,15 @@ let rec mul_value v1 v2 = match (v1,v2) with
   | VFloat f1, VFloat f2 -> VFloat(f1 *. f2)
   | VInt i, VFloat f -> VFloat(float_of_int i *. f)
   | VFloat f, VInt i -> VFloat(f *. float_of_int i)
+  | VStr s, VInt i ->
+    if i < 0 then
+      failwith "Cannot multiply a string with a negatif integer."
+    else
+      let rec mul_string i = 
+        if i = 0 then ""
+        else s ^ (mul_string (i-1))
+      in VStr (mul_string i)
+  | VInt i, VStr s -> mul_value (VStr s) (VInt i) 
   | _ -> failwith (Printf.sprintf "Type mismatch: cannot mul '%s''%s'"(string_of_value v1) (string_of_value v2))
   
 (* Evaluation des expressions *)
@@ -54,6 +81,10 @@ let rec eval_expr e = match e with
     let v1 = eval_expr e1 in
     let v2 = eval_expr e2 in
     add_value v1 v2
+  | EMul (e1, e2) ->
+    let v1 = eval_expr e1 in
+    let v2 = eval_expr e2 in 
+    mul_value v1 v2
   | ENeg e -> neg_value (eval_expr e)
   | _ -> failwith (Printf.sprintf "Evaluation of '%s' not yet implemented" (string_of_expr e))
 
