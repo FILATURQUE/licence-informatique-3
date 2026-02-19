@@ -18,6 +18,11 @@ class Cache[T,U] private (val f : T => U, var hm : HashMap[T,U]){
     }
 }
 
-class Etu {
-    
+class Etu (var numetu : Int){
+    override def equals(that : Any) : Boolean = {
+        that match{
+            case that:Etu => numetu == that.numetu
+            case _ => false 
+        }
+    }
 }
