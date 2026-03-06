@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "scala",
+      "request": "launch",
+      "name": "caca",
+      "mainClass": "caca",
+      "buildTarget": "file:/home/gaaku/Documents/licence-informatique-3/CLI/.scala-build/?id=CLI_d5c0a6989e",
+      "args": [],
+      "jvmOptions": [],
+      "env": {}
+    }
+  ]
+}
