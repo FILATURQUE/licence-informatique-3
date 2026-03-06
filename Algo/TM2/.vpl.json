@@ -1,0 +1,14 @@
+{
+  "useWebsocket": true,
+  "useUnsecureURL": false,
+  "hideInformations": false,
+  "dontRefreshInfos": false,
+  "protocol": "https",
+  "hostname": "moodle.caseine.org",
+  "path": "/webservice/rest/server.php",
+  "vplId": "58485",
+  "personalToken": "c09c1e1172835e0688ac98995b66243e",
+  "files": [
+    "Arbre.java"
+  ]
+}
