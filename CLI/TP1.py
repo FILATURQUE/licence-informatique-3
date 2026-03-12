@@ -63,3 +63,4 @@ class Mirror:
         if self.i > len(self.w):
             raise StopIteration()
         else :
+            
